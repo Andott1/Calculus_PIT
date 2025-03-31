@@ -1,8 +1,8 @@
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QFileDialog, QMessageBox
 import numpy as np
 import sympy as sp
-import matplotlib.pyplot as plt
 from scipy.integrate import quad
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout
+from graph import PlotWidget 
 
 class FunctionVisualizer(QWidget):
     def __init__(self):
@@ -13,7 +13,7 @@ class FunctionVisualizer(QWidget):
         self.setWindowTitle("Function Visualizer")
         layout = QVBoxLayout()
         
-        layout.addWidget(QLabel("Enter function (in terms of x):"))
+        layout.addWidget(QLabel("Enter function (in terms of x; ex. \"2*x**2 + 4*x + 1\"):"))
         self.function_entry = QLineEdit()
         layout.addWidget(self.function_entry)
         
@@ -28,16 +28,24 @@ class FunctionVisualizer(QWidget):
         self.plot_button = QPushButton("Plot")
         self.plot_button.clicked.connect(self.plot)
         layout.addWidget(self.plot_button)
-        
+
+        self.save_button = QPushButton("Save Plot")
+        self.save_button.clicked.connect(self.save_plot)
+        layout.addWidget(self.save_button)
+
+        # Use the PlotWidget instead of directly using Matplotlib
+        self.plot_widget = PlotWidget()
+        layout.addWidget(self.plot_widget)
+
         self.setLayout(layout)
-    
+
     def parse_function(self, func_str):
         x = sp.Symbol('x')
         try:
             func = sp.sympify(func_str)
             return func, x
         except sp.SympifyError:
-            print("Error: Invalid function syntax.")
+            self.warning(warning="Invalid function syntax.")
             return None, None
     
     def numerical_derivative(self, func, x_val, dx=1e-5):
@@ -52,7 +60,7 @@ class FunctionVisualizer(QWidget):
             x_min = float(self.x_min_entry.text())
             x_max = float(self.x_max_entry.text())
         except ValueError:
-            print("Error: Invalid range input.")
+            self.warning(warning="Invalid range input.")
             return
         
         func, x = self.parse_function(func_str)
@@ -63,21 +71,28 @@ class FunctionVisualizer(QWidget):
         y_vals = np.array([float(func.subs(x, val)) for val in x_vals])
         dy_vals = np.array([self.numerical_derivative(func, val) for val in x_vals])
         int_vals = np.array([self.numerical_integral(func, val) for val in x_vals])
+
+        # Use the PlotWidget to plot
+        self.plot_widget.plot_function(x_vals, y_vals, dy_vals, int_vals)
+
+    def save_plot(self):
+        """Opens a file dialog to save the plot as an image."""
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Plot", "", "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*)", options=options)
         
-        plt.figure(figsize=(8, 6))
-        plt.plot(x_vals, y_vals, label='Function')
-        plt.plot(x_vals, dy_vals, label='First Derivative', linestyle='--')
-        plt.plot(x_vals, int_vals, label='Integral', linestyle=':')
+        if file_name:
+            self.plot_widget.save_plot(file_name)
+            print(f"Plot saved as: {file_name}")
+
+    def warning(self, warning):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.setText(warning)
+        msg.setWindowTitle("Error")
+        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+        retval = msg.exec()
         
-        plt.axhline(0, color='black', linewidth=0.5)
-        plt.axvline(0, color='black', linewidth=0.5)
-        plt.legend()
-        plt.title("Function Visualization")
-        plt.xlabel("x")
-        plt.ylabel("y")
-        plt.grid()
-        plt.show()
-        
+
 if __name__ == "__main__":
     app = QApplication([])
     window = FunctionVisualizer()
