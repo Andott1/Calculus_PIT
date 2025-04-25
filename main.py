@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QTextEdit
 import numpy as np
 import sympy as sp
-from scipy.integrate import quad
+from scipy.integrate import quad, cumulative_trapezoid
 from graph import PlotWidget 
 
 class FunctionVisualizer(QWidget):
@@ -37,6 +37,11 @@ class FunctionVisualizer(QWidget):
         self.plot_widget = PlotWidget()
         layout.addWidget(self.plot_widget)
 
+        self.result_box = QTextEdit()
+        self.result_box.setReadOnly(True)
+        self.result_box.setPlaceholderText("Function details will appear here...")
+        layout.addWidget(self.result_box)
+
         self.setLayout(layout)
 
     def parse_function(self, func_str):
@@ -49,10 +54,7 @@ class FunctionVisualizer(QWidget):
             return None, None
     
     def numerical_derivative(self, func, x_val, dx=1e-5):
-        return (float(func.subs('x', x_val + dx)) - float(func.subs('x', x_val - dx))) / (2 * dx)
-    
-    def numerical_integral(self, func, x_val):
-        return quad(lambda x: float(func.subs('x', x)), 0, x_val)[0]
+        return (func.subs('x', x_val + dx).evalf() - func.subs('x', x_val - dx).evalf()) / (2 * dx)
     
     def plot(self):
         func_str = self.function_entry.text()
@@ -66,11 +68,22 @@ class FunctionVisualizer(QWidget):
         func, x = self.parse_function(func_str)
         if func is None:
             return
-        
+            
         x_vals = np.linspace(x_min, x_max, 400)
-        y_vals = np.array([float(func.subs(x, val)) for val in x_vals])
-        dy_vals = np.array([self.numerical_derivative(func, val) for val in x_vals])
-        int_vals = np.array([self.numerical_integral(func, val) for val in x_vals])
+        y_vals = np.array([func.subs(x, val).evalf() for val in x_vals], dtype=np.float64)
+        dy_vals = np.array([self.numerical_derivative(func, val) for val in x_vals], dtype=np.float64)
+        int_vals = cumulative_trapezoid(y_vals, x_vals, initial=0)
+
+        # Symbolic derivatives and integral for display
+        func_diff = sp.diff(func, x)
+        func_integral = sp.integrate(func, x)
+
+        # Update label with formatted math expressions
+        self.result_box.setPlainText(
+            f"Original Function:\n  f(x) = {sp.simplify(func)}\n\n"
+            f"First Derivative:\n  f'(x) = {sp.simplify(func_diff)}\n\n"
+            f"Integral:\n  ∫f(x)dx = {sp.simplify(func_integral)} + C"
+        )
 
         # Use the PlotWidget to plot
         self.plot_widget.plot_function(x_vals, y_vals, dy_vals, int_vals)
