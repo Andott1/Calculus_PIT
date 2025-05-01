@@ -21,7 +21,7 @@
 
 | Splash Screen | Main Window |
 |---------------|-------------|
-| ![Splash](Assets/App Screenshots/Splash Screen.png) | ![Main](Assets/App Screenshots/Main Screen.png) |
+| ![Splash](Assets/App%20Screenshots/Splash%20Screen.png) | ![Main](Assets/App%20Screenshots/Main%20Screen.png) |
 
 ---
 
