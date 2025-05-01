@@ -5,43 +5,6 @@ QWidget {
     
 }
 
-QLineEdit {
-    font-size: 14px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 15px;
-}
-
-QLineEdit:focus {
-    border-color: #007ACC;
-}
-
-QPushButton {
-    font-size: 14px;
-    padding: 8px;
-    border-radius: 4px;
-    background-color: #007ACC;
-    color: white;
-    font-weight: bold;
-    margin: 5px 0;
-}
-
-QPushButton:hover {
-    background-color: #005f99;
-}
-
-/* Custom styling for the range layout and its elements */
-QHBoxLayout {
-    margin-top: 10px;
-}
-
-QLabel[for="range-label"] {
-    font-size: 14px;
-    font-weight: bold;
-    margin-right: 10px;
-}
-
 /* Style for the horizontal spacing for components */
 QSpacerItem {
     height: 10px;
@@ -56,31 +19,10 @@ QMessageBox {
     padding: 15px;
 }
 
-/* Style for the result QTextEdit */
-QTextEdit {
-    font-size: 13px;
-    background-color: #f4f4f4;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 8px;
-    color: #333;
-}
-
-/* Style for the graph area */
-QScrollArea {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 8px;
-    background-color: white;
-}
-
-
-
 """
 
 main_panel_style = """
     QWidget {
-        background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #62b84f, stop: 1 #ffffff);
         margin: 0;
         padding: 15px; 
     }
@@ -110,9 +52,9 @@ left_panel_style = """
     }
 
     QWidget[for="left-widget"] {
-        border-radius: 10px;
+        border-radius: 20px;
         padding: 8px;
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: rgba(0, 0, 0, 0.10);
     }
 
     QLabel[for="function-label"], QLabel[for="derivative-order-label"], QLabel[for="x-range-label"] {
@@ -153,7 +95,10 @@ left_panel_style = """
         font-size: 20px;
         padding: 15px;
         border-radius: 25px;
-        background-color: #007ACC;
+        background: qlineargradient(
+            x1: 0, y1: 0, x2: 1, y2: 1,
+            stop: 0 #007ACC, stop: 1 #00AFFF
+        );  /* Gradient from #007ACC (blue) to #00AFFF (light blue) */
         color: white;
         font-weight: bold;
         margin: 2.5px 0;
@@ -180,19 +125,21 @@ left_panel_style = """
 """
 
 center_panel_style = """
-    QWidget {
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 8px;
-        background-color: white;
+    QScrollArea {
+        border: 10px solid rgba(0, 0, 0, 0.05);  /* Transparent border */
+        padding: 0px;
+        background-color: rgba(0, 0, 0, 0.05);  /* Transparent background */
     }
 """
 
 right_panel_style = """
-    QWidget {
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 8px;
-        background-color: white;
+    QTextEdit {
+        font-family: "Roboto", "Arial", sans-serif;
+        font-size: 14px;
+        font-weight: medium;
+        color: rgba(0, 0, 0, 0.75);
+        border-radius: 20px;
+        padding: 12px;
+        background-color: rgba(0, 0, 0, 0.10);
     }
 """

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QScrollArea, QDesktopWidget, QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QTextEdit, QSpacerItem, QSizePolicy
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtGui import QPixmap, QPainter
 import numpy as np
 import sympy as sp
 from scipy.integrate import quad, cumulative_trapezoid
@@ -14,17 +14,20 @@ class FunctionVisualizer(QWidget):
 
     def initUI(self):
         self.setWindowTitle("Function Visualizer")
-        self.setStyleSheet(style)
+        self.pixmap = QPixmap("Assets/main_screen.png")  # Cache pixmap
+        self.scaled_pixmap = None  # Will hold the scaled pixmap
 
         # Main layout
         main_layout = QVBoxLayout()
-        
-        
 
         # --------- Header ---------
         header_label = QLabel("Function Visualizer")
         header_label.setAlignment(Qt.AlignCenter)
         header_label.setStyleSheet(header_panel_style)
+
+        header_label.setFixedHeight(80)  # Adjust this value as needed
+
+
         main_layout.addWidget(header_label)
 
         # --------- Body Layout (A | B | C) ---------
@@ -114,19 +117,28 @@ class FunctionVisualizer(QWidget):
         # --------- B: Center Graph ---------
         self.plot_widget = PlotWidget()
         self.plot_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
+        
         scroll_area = QScrollArea()
         scroll_area.setWidget(self.plot_widget)
 
         scroll_area.setWidgetResizable(True)
+        scroll_area.setStyleSheet(center_panel_style)
 
-        body_layout.addWidget(scroll_area, stretch=3)      # width ratio
+        wrapper = QWidget()
+        wrapper_layout = QVBoxLayout()
+
+        wrapper_layout.setContentsMargins(20, 20, 20, 20)
+        wrapper.setLayout(wrapper_layout)
+        wrapper_layout.addWidget(scroll_area)
+
+        body_layout.addWidget(wrapper, stretch=3)
 
         # --------- C: Right Result Box ---------
         self.result_box = QTextEdit()
         self.result_box.setReadOnly(True)
         self.result_box.setPlaceholderText("Function details will appear here...")
         self.result_box.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        self.result_box.setStyleSheet(right_panel_style)
 
         body_layout.addWidget(self.result_box, stretch=1)      # width ratio
 
@@ -137,7 +149,21 @@ class FunctionVisualizer(QWidget):
         self.setLayout(main_layout)
 
         self.resize_window_to_percentage()
+
         self.center_window()
+
+    def resizeEvent(self, event):
+        # Scale the image only when the window is resized
+        if self.pixmap:
+            self.scaled_pixmap = self.pixmap.scaled(self.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        super().resizeEvent(event)
+
+    def paintEvent(self, event):
+        if self.scaled_pixmap:
+            painter = QPainter(self)
+            painter.drawPixmap(0, 0, self.scaled_pixmap)
+
+        super().paintEvent(event)  # Ensure other widgets are painted
 
     def resize_window_to_percentage(self):
         # Get the screen's dimensions
@@ -146,7 +172,7 @@ class FunctionVisualizer(QWidget):
         screen_height = screen.height()
 
         # Define the desired window size as a percentage of the screen size
-        window_width_percentage = 0.8  # 80% of the screen width
+        window_width_percentage = 0.65  # 80% of the screen width
         window_height_percentage = 0.7  # 70% of the screen height
 
         # Calculate the window's size based on the percentages
@@ -244,7 +270,7 @@ class FunctionVisualizer(QWidget):
         # Update the result box with the original function, derivatives, and integral
         derivative_text = ""
         for i in range(1, derivative_order + 1):
-            derivative_text += f"Derivative [{i}]:\n  f^{i}(x) = {sp.simplify(derivatives[i])}\n\n"
+            derivative_text += f"<b>Derivative [{i}]</b>:<br>  f^{i}(x) = {sp.simplify(derivatives[i])}<br><br>"
 
         # Simplify the function and derivative text
         simplified_func = sp.simplify(func)
@@ -258,10 +284,10 @@ class FunctionVisualizer(QWidget):
         derivative_text = derivative_text.replace('**', '^').replace('*', '')
 
         # Set the formatted text to the result box
-        self.result_box.setPlainText(
-            f"Original Function:\n  f(x) = {formatted_func}\n\n"
+        self.result_box.setHtml(
+            f"<b>Original Function:</b><br>  f(x) = {formatted_func}<br><br>"
             + derivative_text
-            + f"Integral:\n  ∫f(x)dx = {formatted_integral} + C"
+            + f"<b>Integral:</b><br>  ∫f(x)dx = {formatted_integral} + C"
         )
 
         # Plot the original function and all derivatives
@@ -287,14 +313,14 @@ class FunctionVisualizer(QWidget):
 class SplashScreen(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Welcome")
+        self.setWindowTitle("Welcome to Graphique")
 
         screen_geometry = QDesktopWidget().screenGeometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
         window_width = int(screen_width * 0.55)
-        window_height = int(screen_height * 0.55)
+        window_height = int(screen_height * 0.6)
 
         self.setFixedSize(window_width, window_height)
         self.setStyleSheet("background-color: #FFFFFF; color: black; font-size: 20px;")
@@ -311,7 +337,7 @@ class SplashScreen(QWidget):
         container_layout.setSpacing(0)
 
         # Splash image
-        splash_image = QPixmap("Assets/Splash Screen.png")
+        splash_image = QPixmap("Assets/splash_screen.png")
         scaled_image = splash_image.scaled(window_width, window_height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
 
         image_label = QLabel()
@@ -325,7 +351,7 @@ class SplashScreen(QWidget):
         overlay_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Start button
-        start_button = QPushButton("START GRAPHING")
+        start_button = QPushButton("Start Graphing")
 
         # Define button size as a percentage
         button_width = int(screen_width * 0.125)    # 8% of screen width
@@ -336,14 +362,16 @@ class SplashScreen(QWidget):
 
         start_button.setStyleSheet("""
             QPushButton {
-                background-color: #007ACC;
+                background-color: rgba(94, 94, 219, 0.5);
                 color: white;
                 font-weight: bold;
                 padding: 10px 20px;
-                border-radius: 15px;
+                border-radius: 25px;
             }
             QPushButton:hover {
-                background-color: #005f99;
+                background: rgba(94, 94, 219, 0.25);
+                color: #5E5EDB;
+                font-weight: bold;
             }
         """)
         start_button.clicked.connect(self.launch_main)
