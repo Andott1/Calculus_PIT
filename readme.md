@@ -55,7 +55,7 @@ cd Discrete_PIT
 2. Install the required dependencies:
 
 ```
-pip install pyqt6 requests bs4
+pip install pyqt5 numpy sympy scipy matplotlib
 ```
 
 or
@@ -80,8 +80,11 @@ The application will start with a splash screen, followed by the main applicatio
 FunctionVisualizer/
 ├── Assets/
 │   └── App Screenshots/
-│       ├── Splash Screen.png     # Splash screen image
-│       └── Main Screen.png       # Main UI preview
+│   │   ├── Splash Screen.png     # Splash screen screenshot
+│   │   └── Main Screen.png       # Main screen screenshot
+│   ├── Resources/
+│   ├── splash_screen.png     # Splash screen image
+│   └── main_screen.png       # Main screen image
 ├── styles.py                     # Centralized Qt style definitions
 ├── graph.py                      # Plotting widget using Matplotlib
 ├── main.py                       # Main application logic and UI
