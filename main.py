@@ -5,6 +5,7 @@ import numpy as np
 import sympy as sp
 from scipy.integrate import quad, cumulative_trapezoid
 from graph import PlotWidget 
+from styles import *
 
 class FunctionVisualizer(QWidget):
     def __init__(self):
@@ -13,64 +14,129 @@ class FunctionVisualizer(QWidget):
 
     def initUI(self):
         self.setWindowTitle("Function Visualizer")
-        layout = QVBoxLayout()
+        self.setStyleSheet(style)
 
-        layout.addWidget(QLabel("Enter function (in terms of x; ex. \"2*x**2 + 4*x + 1\"):"))
+        # Main layout
+        main_layout = QVBoxLayout()
+        
+        
+
+        # --------- Header ---------
+        header_label = QLabel("Function Visualizer")
+        header_label.setAlignment(Qt.AlignCenter)
+        header_label.setStyleSheet(header_panel_style)
+        main_layout.addWidget(header_label)
+
+        # --------- Body Layout (A | B | C) ---------
+        body_layout = QHBoxLayout()
+
+        # --------- A: Left Controls ---------
+        left_panel = QVBoxLayout()
+
+        # Horizontal layout for label and help icon
+        func_label_layout = QHBoxLayout()
+
+        func_label = QLabel("Enter function")
+        func_label.setProperty("for", "function-label")
+
+        func_help_icon = QLabel("?")
+        func_help_icon.setProperty("for", "func-help-icon")  # Set the "for" property
+        func_help_icon.setToolTip('Enter a mathematical function in terms of x\nExample: 2*x**2 + 4*x + 1')
+
+        func_label_layout.addWidget(func_label)
+        func_label_layout.addStretch() 
+        func_label_layout.addWidget(func_help_icon)
+
+        left_panel.addLayout(func_label_layout)
+
         self.function_entry = QLineEdit()
-        layout.addWidget(self.function_entry)
+        self.function_entry.setPlaceholderText("Enter function")
 
-        layout.addWidget(QLabel("X Range (min, max):"))
+        left_panel.addWidget(self.function_entry)
+
+        x_range_label = QLabel("X Range (min, max):")
+        x_range_label.setProperty("for", "x-range-label")
+        left_panel.addWidget(x_range_label)
+
         range_layout = QHBoxLayout()
+
         self.x_min_entry = QLineEdit()
+        self.x_min_entry.setPlaceholderText("Enter x-min")
+
         self.x_max_entry = QLineEdit()
+        self.x_max_entry.setPlaceholderText("Enter x-max")
+
         range_layout.addWidget(self.x_min_entry)
         range_layout.addWidget(self.x_max_entry)
-        layout.addLayout(range_layout)
 
-        # New field for higher-order derivative
-        layout.addWidget(QLabel("Derivative Order (e.g., 1 for first derivative):"))
+        left_panel.addLayout(range_layout)
+
+        # Horizontal layout for Derivative Order label and help icon
+        deriv_label_layout = QHBoxLayout()
+        deriv_label = QLabel("Derivative Order")
+        deriv_label.setProperty("for", "function-label")
+
+        deriv_help_icon = QLabel("?")
+        deriv_help_icon.setProperty("for", "deriv-help-icon")  # Set the "for" property
+        deriv_help_icon.setToolTip("Specify the derivative order.\nExample: 1 for first derivative, 2 for second, etc.")
+
+        deriv_label_layout.addWidget(deriv_label)
+        deriv_label_layout.addStretch()
+        deriv_label_layout.addWidget(deriv_help_icon)
+
+        left_panel.addLayout(deriv_label_layout)
+
         self.derivative_order_entry = QLineEdit()
         self.derivative_order_entry.setPlaceholderText("Enter derivative order")
-        layout.addWidget(self.derivative_order_entry)
 
-        self.plot_button = QPushButton("Plot")
+        left_panel.addWidget(self.derivative_order_entry)
+
+        self.plot_button = QPushButton("PLOT")
+        self.plot_button.setProperty("for", "plot-button")  # Set the "for" property
         self.plot_button.clicked.connect(self.plot)
-        layout.addWidget(self.plot_button)
+        left_panel.addWidget(self.plot_button)
 
-        self.save_button = QPushButton("Save Plot")
+        self.save_button = QPushButton("Save Graph")
+        self.save_button.setProperty("for", "save-plot-button")  # Set the "for" property
         self.save_button.clicked.connect(self.save_plot)
-        layout.addWidget(self.save_button)
+        left_panel.addWidget(self.save_button)
 
-        # Set up right layout for the graph and result box
-        right_layout = QHBoxLayout()
+        left_widget = QWidget()
+        left_widget.setProperty("for", "left-widget")  # Set the "for" property
+        
+        left_panel.addStretch()
+        
+        left_widget.setLayout(left_panel)
+        left_widget.setStyleSheet(left_panel_style)
 
-        # Create the plot widget
+        body_layout.addWidget(left_widget, stretch=1)      # width ratio
+
+        # --------- B: Center Graph ---------
         self.plot_widget = PlotWidget()
         self.plot_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Create a QScrollArea to make the plot widget scrollable
         scroll_area = QScrollArea()
-        scroll_area.setWidget(self.plot_widget)  # Set the plot widget as the scrollable widget
-        scroll_area.setWidgetResizable(True)  # Allow the widget to resize within the scroll area
+        scroll_area.setWidget(self.plot_widget)
 
-        # Set a fixed minimum size for the plot widget to ensure scrolling is triggered
-        self.plot_widget.setMinimumSize(800, 600)  # Set the size depending on your graph's expected dimensions
+        scroll_area.setWidgetResizable(True)
 
-        right_layout.addWidget(scroll_area)
+        body_layout.addWidget(scroll_area, stretch=3)      # width ratio
 
-        # Result Box
+        # --------- C: Right Result Box ---------
         self.result_box = QTextEdit()
         self.result_box.setReadOnly(True)
         self.result_box.setPlaceholderText("Function details will appear here...")
-        self.result_box.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)  # Allow the result box to expand vertically but not horizontally
-        right_layout.addWidget(self.result_box)
+        self.result_box.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 
-        layout.addLayout(right_layout)
-        self.setLayout(layout)
+        body_layout.addWidget(self.result_box, stretch=1)      # width ratio
 
-        # Resize window based on screen size (percentage) but allow resizing
+        # Combine header and body
+        main_layout.addLayout(body_layout)
+        self.setStyleSheet(main_panel_style)
+        
+        self.setLayout(main_layout)
+
         self.resize_window_to_percentage()
-
         self.center_window()
 
     def resize_window_to_percentage(self):
@@ -89,6 +155,12 @@ class FunctionVisualizer(QWidget):
 
         # Set initial window size but allow manual resizing
         self.resize(window_width, window_height)
+
+        if hasattr(self, 'plot_widget'):
+            min_plot_width = int(window_width * 0.5)
+            min_plot_height = int(window_height * 0.75)
+            self.plot_widget.setMinimumWidth(min_plot_width)
+            self.plot_widget.setMinimumHeight(min_plot_height)
 
     def center_window(self):
         # Get the screen's dimensions
@@ -221,27 +293,67 @@ class SplashScreen(QWidget):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        window_width = int(screen_width * 0.55)  # 50% of screen width
-        window_height = int(screen_height * 0.55)  # 30% of screen height
+        window_width = int(screen_width * 0.55)
+        window_height = int(screen_height * 0.55)
 
         self.setFixedSize(window_width, window_height)
         self.setStyleSheet("background-color: #FFFFFF; color: black; font-size: 20px;")
-        layout = QVBoxLayout()
-        
-        # Replace text with an image
-        splash_image = QPixmap("Assets/Splash Screen.png")  # Path to your image
-        scaled_image = splash_image.scaled(window_width, window_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-        image_label = QLabel(self)
+        # Main layout
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        # Create a container for image and button
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container_layout.setContentsMargins(0, 0, 0, 0)
+        container_layout.setSpacing(0)
+
+        # Splash image
+        splash_image = QPixmap("Assets/Splash Screen.png")
+        scaled_image = splash_image.scaled(window_width, window_height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+
+        image_label = QLabel()
         image_label.setPixmap(scaled_image)
-        image_label.setAlignment(Qt.AlignCenter)  # Center the image
-        layout.addWidget(image_label)
-        
-        # Retain the start button
-        start_button = QPushButton("Start")
+        image_label.setAlignment(Qt.AlignCenter)
+        image_label.setStyleSheet("background-color: transparent;")
+
+        # Overlay layout
+        overlay_layout = QVBoxLayout(image_label)
+        overlay_layout.setContentsMargins(20, 20, 20, 50) # (left, top, right, bottom)
+        overlay_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+        # Start button
+        start_button = QPushButton("START GRAPHING")
+
+        # Define button size as a percentage
+        button_width = int(screen_width * 0.125)    # 8% of screen width
+        button_height = int(screen_height * 0.075)  # 5% of screen height
+
+        # Set responsive size
+        start_button.setFixedSize(button_width, button_height)
+
+        start_button.setStyleSheet("""
+            QPushButton {
+                background-color: #007ACC;
+                color: white;
+                font-weight: bold;
+                padding: 10px 20px;
+                border-radius: 15px;
+            }
+            QPushButton:hover {
+                background-color: #005f99;
+            }
+        """)
         start_button.clicked.connect(self.launch_main)
-        layout.addWidget(start_button, alignment=Qt.AlignCenter)
-        
+
+        overlay_layout.addWidget(start_button, alignment=Qt.AlignCenter)
+
+        container_layout.addWidget(image_label)
+        container.setLayout(container_layout)
+
+        layout.addWidget(container)
         self.setLayout(layout)
 
     def launch_main(self):

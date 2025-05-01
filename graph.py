@@ -36,19 +36,13 @@ class PlotWidget(FigureCanvas):
         self.ax.set_ylabel("y")
         self.ax.grid()
 
-        # Adjust margins to provide more space to the right side for the legend
-        self.figure.subplots_adjust(right=0.8)  # Increase this value to provide more space to the right
-
         # Set legend properties and clip it if necessary
         self.ax.legend(
-            loc='upper left',  # Position of the legend
-            bbox_to_anchor=(1, 1),  # Position the legend outside the plot (on the right side)
-            ncol=1,  # Number of columns in the legend
-            frameon=False,  # Turn off the frame for a cleaner look
-            fontsize=8,  # Set a smaller font size to reduce the size of the legend
-            borderpad=1,  # Padding around the legend box
-            labelspacing=1.5,  # Space between legend labels
-            columnspacing=1.5  # Space between columns in the legend (if there are multiple columns)
+            loc='upper right',  # or 'upper left', 'lower left', etc.
+            fontsize=8,
+            frameon=False,
+            borderpad=1,
+            labelspacing=1.2
         )
 
         # Ensure that the legend box is clipped if it's overflowing
