@@ -23,7 +23,7 @@
 
 | Splash Screen | Main Window |
 |---------------|-------------|
-| ![Splash](Assets/App%20Screenshots/Splash%20Screen.png =300x) | ![Main](Assets/App%20Screenshots/Main%20Screen.png =300x) |
+| <img src="Assets/App%20Screenshots/Splash%20Screen.png" width="300"> | <img src="Assets/App%20Screenshots/Main%20Screen.png" width="300"> |
 
 ---
 
