@@ -97,30 +97,35 @@ left_panel_style = """
         border-radius: 25px;
         background: qlineargradient(
             x1: 0, y1: 0, x2: 1, y2: 1,
-            stop: 0 #007ACC, stop: 1 #00AFFF
-        );  /* Gradient from #007ACC (blue) to #00AFFF (light blue) */
+            stop: 0 #8E87F4, stop: 1 #FD8FD4
+        );  /* Gradient from #8E87F4 (Purple) to #FD8FD4 (Pink) */
         color: white;
-        font-weight: bold;
+        font-weight: 800;
         margin: 2.5px 0;
     }
 
     QPushButton:hover[for="plot-button"] {
-        background-color: #005f99;
+        background-color: rgba(180, 180, 235, 0.50);
+        color: #7373F5;
     }
 
     QPushButton[for="save-plot-button"] {
         font-family: "Roboto", "Arial", sans-serif;
         font-size: 14px;
-        color: rgba(15, 15, 15, 0.5);
+        color: rgba(255, 255, 255, 0.90);
         padding: 15px;
         border-radius: 20px;
-        background-color: #d6d6d6;
+        background-color: rgba(142, 135, 244, 0.50);
         font-weight: bold;
         margin: 5px 0;
     }
 
     QPushButton:hover[for="save-plot-button"] {
-        background-color: #adadad;
+        background-color: qlineargradient(
+            x1: 0, y1: 0, x2: 1, y2: 1,
+            stop: 0 #8E87F4, stop: 1 #FD8FD4
+        );
+        color: white;
     }
 """
 
