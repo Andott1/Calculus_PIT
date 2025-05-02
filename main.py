@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QScrollArea, QDesktopWidget, QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QTextEdit, QSpacerItem, QSizePolicy
-from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtGui import QPixmap, QPainter
+from PyQt5.QtWidgets import QTabWidget, QScrollArea, QDesktopWidget, QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QTextEdit, QSpacerItem, QSizePolicy
+from PyQt5.QtCore import Qt, QEvent, QTimer, QPropertyAnimation, QEasingCurve, QRect
+from PyQt5.QtGui import QPixmap, QPainter, QCursor
 import numpy as np
 import sympy as sp
 from scipy.integrate import quad, cumulative_trapezoid
@@ -19,22 +19,29 @@ class FunctionVisualizer(QWidget):
 
         # Main layout
         main_layout = QVBoxLayout()
+        main_layout.setSpacing(15)
 
         # --------- Header ---------
+        header_widget = QWidget()
+        header_layout = QVBoxLayout(header_widget)
+        header_layout.setContentsMargins(0, 0, 0, 0)
+
         header_label = QLabel("Function Visualizer")
         header_label.setAlignment(Qt.AlignCenter)
-        header_label.setStyleSheet(header_panel_style)
+        header_layout.addWidget(header_label)
 
-        header_label.setFixedHeight(80)  # Adjust this value as needed
+        header_widget.setStyleSheet(header_panel_style)
+        header_widget.setFixedHeight(80)
 
-
-        main_layout.addWidget(header_label)
+        main_layout.addWidget(header_widget)
 
         # --------- Body Layout (A | B | C) ---------
         body_layout = QHBoxLayout()
+        body_layout.setSpacing(15)
 
         # --------- A: Left Controls ---------
         left_panel = QVBoxLayout()
+        left_panel.setSpacing(15)
 
         # Horizontal layout for label and help icon
         func_label_layout = QHBoxLayout()
@@ -43,8 +50,9 @@ class FunctionVisualizer(QWidget):
         func_label.setProperty("for", "function-label")
 
         func_help_icon = QLabel("?")
-        func_help_icon.setProperty("for", "func-help-icon")  # Set the "for" property
-        func_help_icon.setToolTip('Enter a mathematical function in terms of x\nExample: 2*x**2 + 4*x + 1')
+        func_help_icon.setProperty("for", "func-help-icon")
+        func_help_icon.setToolTip('Enter a mathematical function in terms of x\\nExample: 2*x**2 + 4*x + 1')
+        func_help_icon.setCursor(QCursor(Qt.PointingHandCursor))
 
         func_label_layout.addWidget(func_label)
         func_label_layout.addStretch() 
@@ -53,7 +61,7 @@ class FunctionVisualizer(QWidget):
         left_panel.addLayout(func_label_layout)
 
         self.function_entry = QLineEdit()
-        self.function_entry.setPlaceholderText("Enter function")
+        self.function_entry.setPlaceholderText("Enter function (e.g., x**2 + 2*x)")
 
         left_panel.addWidget(self.function_entry)
 
@@ -62,12 +70,13 @@ class FunctionVisualizer(QWidget):
         left_panel.addWidget(x_range_label)
 
         range_layout = QHBoxLayout()
+        range_layout.setSpacing(10)
 
         self.x_min_entry = QLineEdit()
-        self.x_min_entry.setPlaceholderText("Enter x-min")
+        self.x_min_entry.setPlaceholderText("Min (e.g., -10)")
 
         self.x_max_entry = QLineEdit()
-        self.x_max_entry.setPlaceholderText("Enter x-max")
+        self.x_max_entry.setPlaceholderText("Max (e.g., 10)")
 
         range_layout.addWidget(self.x_min_entry)
         range_layout.addWidget(self.x_max_entry)
@@ -80,8 +89,9 @@ class FunctionVisualizer(QWidget):
         deriv_label.setProperty("for", "function-label")
 
         deriv_help_icon = QLabel("?")
-        deriv_help_icon.setProperty("for", "deriv-help-icon")  # Set the "for" property
-        deriv_help_icon.setToolTip("Specify the derivative order.\nExample: 1 for first derivative, 2 for second, etc.")
+        deriv_help_icon.setProperty("for", "deriv-help-icon")
+        deriv_help_icon.setToolTip("Specify the derivative order.\\nExample: 1 for first derivative, 2 for second, etc.")
+        deriv_help_icon.setCursor(QCursor(Qt.PointingHandCursor))
 
         deriv_label_layout.addWidget(deriv_label)
         deriv_label_layout.addStretch()
@@ -90,22 +100,24 @@ class FunctionVisualizer(QWidget):
         left_panel.addLayout(deriv_label_layout)
 
         self.derivative_order_entry = QLineEdit()
-        self.derivative_order_entry.setPlaceholderText("Enter derivative order")
+        self.derivative_order_entry.setPlaceholderText("Enter derivative order (e.g., 1)")
 
         left_panel.addWidget(self.derivative_order_entry)
 
         self.plot_button = QPushButton("PLOT")
-        self.plot_button.setProperty("for", "plot-button")  # Set the "for" property
+        self.plot_button.setProperty("for", "plot-button")
         self.plot_button.clicked.connect(self.plot)
+        self.plot_button.setCursor(QCursor(Qt.PointingHandCursor))
         left_panel.addWidget(self.plot_button)
 
         self.save_button = QPushButton("Save Graph")
-        self.save_button.setProperty("for", "save-plot-button")  # Set the "for" property
+        self.save_button.setProperty("for", "save-plot-button")
         self.save_button.clicked.connect(self.save_plot)
+        self.save_button.setCursor(QCursor(Qt.PointingHandCursor))
         left_panel.addWidget(self.save_button)
 
         left_widget = QWidget()
-        left_widget.setProperty("for", "left-widget")  # Set the "for" property
+        left_widget.setProperty("for", "left-widget")
         
         left_panel.addStretch()
         
@@ -115,23 +127,37 @@ class FunctionVisualizer(QWidget):
         body_layout.addWidget(left_widget, stretch=1)      # width ratio
 
         # --------- B: Center Graph ---------
+        center_widget = QWidget()
+        center_layout = QVBoxLayout(center_widget)
+        center_layout.setContentsMargins(10, 10, 10, 10)
+
+        # Create tab widget
+        tab_widget = QTabWidget()
+        tab_widget.setStyleSheet(tab_style)
+
+        # Graph tab
+        graph_tab = QWidget()
+        graph_layout = QVBoxLayout(graph_tab)
         self.plot_widget = PlotWidget()
         self.plot_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        
-        scroll_area = QScrollArea()
-        scroll_area.setWidget(self.plot_widget)
+        graph_layout.addWidget(self.plot_widget)
 
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setStyleSheet(center_panel_style)
+        # Data tab
+        data_tab = QWidget()
+        data_layout = QVBoxLayout(data_tab)
+        self.data_view = QTextEdit()
+        self.data_view.setReadOnly(True)
+        self.data_view.setPlaceholderText("Plot data will appear here...")
+        data_layout.addWidget(self.data_view)
 
-        wrapper = QWidget()
-        wrapper_layout = QVBoxLayout()
+        # Add tabs to tab widget
+        tab_widget.addTab(graph_tab, "Graph")
+        tab_widget.addTab(data_tab, "Data Points")
 
-        wrapper_layout.setContentsMargins(20, 20, 20, 20)
-        wrapper.setLayout(wrapper_layout)
-        wrapper_layout.addWidget(scroll_area)
+        center_layout.addWidget(tab_widget)
+        center_widget.setStyleSheet(center_panel_style)
 
-        body_layout.addWidget(wrapper, stretch=3)
+        body_layout.addWidget(center_widget, stretch=3)
 
         # --------- C: Right Result Box ---------
         self.result_box = QTextEdit()
@@ -149,7 +175,6 @@ class FunctionVisualizer(QWidget):
         self.setLayout(main_layout)
 
         self.resize_window_to_percentage()
-
         self.center_window()
 
     def resizeEvent(self, event):
@@ -172,8 +197,8 @@ class FunctionVisualizer(QWidget):
         screen_height = screen.height()
 
         # Define the desired window size as a percentage of the screen size
-        window_width_percentage = 0.65  # 80% of the screen width
-        window_height_percentage = 0.7  # 70% of the screen height
+        window_width_percentage = 0.75  # 75% of the screen width
+        window_height_percentage = 0.8  # 80% of the screen height
 
         # Calculate the window's size based on the percentages
         window_width = int(screen_width * window_width_percentage)
@@ -211,7 +236,7 @@ class FunctionVisualizer(QWidget):
             func = sp.sympify(func_str)
             return func, x
         except sp.SympifyError:
-            self.warning(warning="Invalid function syntax.\nExample: 3*x**2 + 2*x - 4")
+            self.warning(warning="Invalid function syntax.\\nExample: 3*x**2 + 2*x - 4")
             return None, None
     
     def numerical_derivative(self, func, x_val, dx=1e-5):
@@ -270,7 +295,7 @@ class FunctionVisualizer(QWidget):
         # Update the result box with the original function, derivatives, and integral
         derivative_text = ""
         for i in range(1, derivative_order + 1):
-            derivative_text += f"<b>Derivative [{i}]</b>:<br>  f^{i}(x) = {sp.simplify(derivatives[i])}<br><br>"
+            derivative_text += f"<h3 style='color: #8E87F4; margin-bottom: 5px;'>Derivative [{i}]:</h3><p style='margin-left: 15px; margin-top: 0;'>f^{i}(x) = {sp.simplify(derivatives[i])}</p>"
 
         # Simplify the function and derivative text
         simplified_func = sp.simplify(func)
@@ -280,18 +305,34 @@ class FunctionVisualizer(QWidget):
         formatted_func = str(simplified_func).replace('**', '^').replace('*', '')
         formatted_integral = str(simplified_integral).replace('**', '^').replace('*', '')
 
-        # Construct the derivative text similarly, if applicable
-        derivative_text = derivative_text.replace('**', '^').replace('*', '')
-
-        # Set the formatted text to the result box
+        # Set the formatted text to the result box with better HTML formatting
         self.result_box.setHtml(
-            f"<b>Original Function:</b><br>  f(x) = {formatted_func}<br><br>"
-            + derivative_text
-            + f"<b>Integral:</b><br>  ∫f(x)dx = {formatted_integral} + C"
+            f"<div style='line-height: 1.5;'>"
+            f"<h3 style='color: #8E87F4; margin-bottom: 5px;'>Original Function:</h3>"
+            f"<p style='margin-left: 15px; margin-top: 0;'>f(x) = {formatted_func}</p>"
+            f"{derivative_text}"
+            f"<h3 style='color: #8E87F4; margin-bottom: 5px;'>Integral:</h3>"
+            f"<p style='margin-left: 15px; margin-top: 0;'>∫f(x)dx = {formatted_integral} + C</p>"
+            f"</div>"
         )
 
-        # Plot the original function and all derivatives
-        self.plot_widget.plot_function(x_vals, y_vals_list, dy_vals_list, int_vals)
+        # Plot the original function and all derivatives with animation
+        self.plot_widget.animate_plot(x_vals, y_vals_list, dy_vals_list, int_vals)
+        
+        # Update data tab with information
+        data_text = f"Function: {func_str}\n\n"
+        data_text += f"X Range: {x_min} to {x_max}\n"
+        data_text += f"Number of points: {len(x_vals)}\n\n"
+        data_text += "Sample data points:\n"
+
+        # Add some sample points
+        for i in range(min(10, len(x_vals))):
+            data_text += f"x = {x_vals[i]:.2f}, y = {y_vals_list[0][i]:.2f}\n"
+
+        if len(x_vals) > 10:
+            data_text += "...\n"
+
+        self.data_view.setText(data_text)
 
     def save_plot(self):
         """Opens a file dialog to save the plot as an image."""
@@ -314,6 +355,7 @@ class SplashScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Welcome to Graphique")
+        self.setWindowFlag(Qt.FramelessWindowHint)  # Remove window frame
 
         screen_geometry = QDesktopWidget().screenGeometry()
         screen_width = screen_geometry.width()
@@ -323,7 +365,7 @@ class SplashScreen(QWidget):
         window_height = int(screen_height * 0.6)
 
         self.setFixedSize(window_width, window_height)
-        self.setStyleSheet("background-color: #FFFFFF; color: black; font-size: 20px;")
+        self.setStyleSheet(splashscreen_style)
 
         # Main layout
         layout = QVBoxLayout()
@@ -351,42 +393,45 @@ class SplashScreen(QWidget):
         overlay_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Start button
-        start_button = QPushButton("Start Graphing")
-
-        # Define button size as a percentage
+        self.start_button = QPushButton("Start Graphing")
         button_width = int(screen_width * 0.125)    # 8% of screen width
         button_height = int(screen_height * 0.075)  # 5% of screen height
+        self.start_button.setFixedSize(button_width, button_height)
+        self.start_button.clicked.connect(self.launch_main)
+        self.start_button.setVisible(False)  # Hide initially for animation
+        self.start_button.setCursor(QCursor(Qt.PointingHandCursor))
 
-        # Set responsive size
-        start_button.setFixedSize(button_width, button_height)
-
-        start_button.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(94, 94, 219, 0.5);
-                color: white;
-                font-weight: bold;
-                padding: 10px 20px;
-                border-radius: 25px;
-            }
-            QPushButton:hover {
-                background: rgba(94, 94, 219, 0.25);
-                color: #5E5EDB;
-                font-weight: bold;
-            }
-        """)
-        start_button.clicked.connect(self.launch_main)
-
-        overlay_layout.addWidget(start_button, alignment=Qt.AlignCenter)
+        overlay_layout.addWidget(self.start_button, alignment=Qt.AlignCenter)
 
         container_layout.addWidget(image_label)
         container.setLayout(container_layout)
 
         layout.addWidget(container)
         self.setLayout(layout)
+        
+        # Set up animation timer
+        QTimer.singleShot(1000, self.animate_button)
+        
+    def animate_button(self):
+        # Make button visible
+        self.start_button.setVisible(True)
+        
+        # Create animation for button
+        self.anim = QPropertyAnimation(self.start_button, b"geometry")
+        self.anim.setDuration(500)
+        self.anim.setStartValue(QRect(
+            self.start_button.x(), 
+            self.start_button.y() + 50,  # Start below final position
+            self.start_button.width(), 
+            self.start_button.height()
+        ))
+        self.anim.setEndValue(self.start_button.geometry())
+        self.anim.setEasingCurve(QEasingCurve.OutBack)  # Bouncy effect
+        self.anim.start()
 
     def launch_main(self):
         self.close()
-        self.main = FunctionVisualizer()  # Assuming you have a class FunctionVisualizer
+        self.main = FunctionVisualizer()
         self.main.show()
         
 
