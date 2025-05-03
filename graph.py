@@ -110,7 +110,7 @@ class PlotWidget(FigureCanvas):
                 # Create or update annotation
                 if self.annotation is None:
                     self.annotation = self.ax.annotate(
-                        f"x: {x_point:.2f}\\ny: {y_point:.2f}",
+                        f"x: {x_point:.2f}\ny: {y_point:.2f}",
                         xy=(x_point, y_point),
                         xytext=(20, 20),
                         textcoords="offset points",
@@ -119,7 +119,7 @@ class PlotWidget(FigureCanvas):
                     )
                 else:
                     self.annotation.xy = (x_point, y_point)
-                    self.annotation.set_text(f"x: {x_point:.2f}\\ny: {y_point:.2f}")
+                    self.annotation.set_text(f"x: {x_point:.2f}\ny: {y_point:.2f}")
                     self.annotation.set_visible(True)
                     
                 self.draw_idle()
@@ -221,7 +221,8 @@ class PlotWidget(FigureCanvas):
         # Create animation
         ani = animation.FuncAnimation(
             self.figure, animate, frames=20, 
-            init_func=init, blit=True, interval=50
+            init_func=init, blit=True, interval=50,
+            repeat=False  # Animation stops after one full playthrough
         )
         
         # Store data for hover functionality
