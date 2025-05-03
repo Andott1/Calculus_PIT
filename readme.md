@@ -21,9 +21,9 @@
 
 ## 🖼️ Screenshots
 
-| Splash Screen | Main Window |
-|---------------|-------------|
-| <img src="Assets/App%20Screenshots/Splash%20Screen.png" width="500"> | <img src="Assets/App%20Screenshots/Main%20Screen.png" width="500"> |
+| Splash Screen                              | Main Window                                |
+|-------------------------------------------|--------------------------------------------|
+| ![Splash Screen](Assets/App%20Screenshots/Splash%20Screen.png) | ![Main Window](Assets/App%20Screenshots/Main%20Screen.png) |
 
 ---
 
@@ -49,20 +49,20 @@ The application requires the following Python packages:
 
 1. Clone or download this repository:
 
-```
+```bash
 git clone https://github.com/Andott1/Discrete_PIT.git
 cd Discrete_PIT
 ```
 
-2. Install the required dependencies:
+1. Install the required dependencies:
 
-```
+```bash
 pip install pyqt5 numpy sympy scipy matplotlib
 ```
 
 or
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 
 To run the application, simply execute the main.py file:
 
-```
+```bash
 python main.py
 ```
 
@@ -78,7 +78,7 @@ The application will start with a splash screen, followed by the main applicatio
 
 ## Project Structure
 
-```
+```bash
 FunctionVisualizer/
 ├── Assets/
 │   └── App Screenshots/
@@ -108,21 +108,24 @@ FunctionVisualizer/
 ### Common Issues
 
 1. **Graph not appearing**:
+
 - Ensure your input expression is valid Python math syntax (e.g., use x**2 not x^2)
 - Check console for errors
 - Try using a simpler function
 
-2. **Missing images**:
+1. **Missing images**:
+
 - Make sure the Assets/App Screenshots/ folder contains the correct images
 - Supported formats: PNG, JPG
 
-3. **Invalid Function Input**:
+1. **Invalid Function Input**:
+
 - Only use valid variable x
 - Constants like pi and e are supported via sympy
 
 ## Development
 
-### To modify the UI or logic:
+### To modify the UI or logic
 
 1. Edit main.py for main functionality and UI logic
 2. Modify graph.py to customize how plots appear
