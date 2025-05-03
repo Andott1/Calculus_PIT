@@ -421,7 +421,7 @@ class GraphiqueApp(QMainWindow):
 
     def create_right_panel(self):
         right_panel = QWidget()
-        right_panel.setStyleSheet("background-color: rgba(200, 200, 200, 0.5); border-radius: 10px;")
+        right_panel.setStyleSheet("background-color: rgba(145, 145, 220, 0.25); border-radius: 10px;")
         right_layout = QVBoxLayout(right_panel)
         right_layout.setContentsMargins(15, 15, 15, 15)
 
