@@ -14,16 +14,14 @@
 - 📊 Graph original function, derivatives, and area under the curve
 - 💾 Save graph output as PNG/JPG
 - 🖼️ Smooth and responsive UI with a welcome splash screen
-- 🔍 Scrollable graph area for large visualizations
-- ❓ Help tooltips and warnings for invalid input
 
 ---
 
 ## 🖼️ Screenshots
 
-| Splash Screen | Main Window |
-|---------------|-------------|
-| <img src="Assets/App%20Screenshots/Splash%20Screen.png" width="500"> | <img src="Assets/App%20Screenshots/Main%20Screen.png" width="500"> |
+| Splash Screen                              | Main Window                                |
+|-------------------------------------------|--------------------------------------------|
+| ![Splash Screen](Assets/App%20Screenshots/Splash%20Screen.png) | ![Main Window](Assets/App%20Screenshots/Main%20Screen.png) |
 
 ---
 
@@ -49,20 +47,20 @@ The application requires the following Python packages:
 
 1. Clone or download this repository:
 
-```
-git clone https://github.com/Andott1/Discrete_PIT.git
-cd Discrete_PIT
+```bash
+git clone https://github.com/Andott1/Calculus_PIT.git
+cd Calculus_PIT
 ```
 
-2. Install the required dependencies:
+1. Install the required dependencies:
 
-```
+```bash
 pip install pyqt5 numpy sympy scipy matplotlib
 ```
 
 or
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
@@ -70,7 +68,7 @@ pip install -r requirements.txt
 
 To run the application, simply execute the main.py file:
 
-```
+```bash
 python main.py
 ```
 
@@ -78,20 +76,26 @@ The application will start with a splash screen, followed by the main applicatio
 
 ## Project Structure
 
-```
-FunctionVisualizer/
+```bash
+Graphique/
 ├── Assets/
 │   └── App Screenshots/
-│   │   ├── Splash Screen.png     # Splash screen screenshot
-│   │   └── Main Screen.png       # Main screen screenshot
+│   │   ├── Main Screen.png         # Main screen screenshot
+│   │   └── Splash Screen.png       # Splash screen screenshot
+│   ├── Fonts/                      
+│   │   ├── Roboto_Condensed-Black.ttf
+│   │   └── Roboto-Black.ttf      
+│   │   ├── Roboto-Italic.ttf       # Complete font family
+│   │   └── ... +33 more .ttf
 │   ├── Resources/
-│   ├── splash_screen.png     # Splash screen image
-│   └── main_screen.png       # Main screen image
-├── styles.py                     # Centralized Qt style definitions
-├── graph.py                      # Plotting widget using Matplotlib
-├── main.py                       # Main application logic and UI
-├── requirements.txt              # (Optional) List of required packages
-└── README.md                     # This file
+│   ├── back_icon.png               # Back icon image
+│   └── info_icon.png               # Info icon image
+│   ├── splash_screen.png           # Splash screen image
+│   └── main_screen.png             # Main screen image
+├── graph.py                        # Plotting widget using Matplotlib
+├── main.py                         # Main application logic and UI
+├── requirements.txt                # (Optional) List of required packages
+└── README.md                       # This file
 ```
 
 ## Usage
@@ -101,32 +105,34 @@ FunctionVisualizer/
 3. **Choose Derivative Order**: Optional, set to 1 for first derivative, 2 for second, etc.
 4. **Click Plot**: Visualize the function, its derivatives, and integral
 5. **Save Graph**: Export the plotted graph to an image file
-6. **View Results**: Symbolic derivative and integral will be shown on the side panel
+6. **Switch View**: Function Graph or Symbolic derivative and integral will be shown on toggle
 
 ## Troubleshooting
 
 ### Common Issues
 
 1. **Graph not appearing**:
+
 - Ensure your input expression is valid Python math syntax (e.g., use x**2 not x^2)
 - Check console for errors
 - Try using a simpler function
 
-2. **Missing images**:
-- Make sure the Assets/App Screenshots/ folder contains the correct images
+1. **Missing images**:
+
+- Make sure the Assets/ folder contains the correct images
 - Supported formats: PNG, JPG
 
-3. **Invalid Function Input**:
+1. **Invalid Function Input**:
+
 - Only use valid variable x
 - Constants like pi and e are supported via sympy
 
 ## Development
 
-### To modify the UI or logic:
+### To modify the UI or logic
 
 1. Edit main.py for main functionality and UI logic
 2. Modify graph.py to customize how plots appear
-3. Tweak styles.py to change application styling
 
 ## License
 

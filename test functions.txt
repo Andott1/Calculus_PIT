@@ -1,0 +1,24 @@
+TEST VALUES
+
+-- SMALL --
+- Function:
+> x**2 + 3*x +5
+
+- X-Range:
+> Min = -10
+> Max = 10
+
+- Derivative Order:
+> 2
+
+
+-- BIG --
+- Function:
+> 2*x**6 - 5*x**5 + 3*x**4 + 7*x**3 - 4*x**2 + 6*x + 10
+
+- X-Range:
+> Min = -10
+> Max = 10
+
+- Derivative Order:
+> 6
