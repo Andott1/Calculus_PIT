@@ -14,7 +14,14 @@ class PlotWidget(FigureCanvas):
         # Add data cursor for interactive data points
         self.data_cursor = None
         self.annotation = None
+        self._drag_start = None
+
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_hover)
+        self.figure.canvas.mpl_connect('scroll_event', self.on_scroll)
+        self.figure.canvas.mpl_connect('button_press_event', self.on_press)
+        self.figure.canvas.mpl_connect('motion_notify_event', self.on_drag)
+        self.figure.canvas.mpl_connect('button_release_event', self.on_release)
+
         
         # Store data for hover functionality
         self.x_data = None
@@ -126,6 +133,60 @@ class PlotWidget(FigureCanvas):
             elif self.annotation is not None:
                 self.annotation.set_visible(False)
                 self.draw_idle()
+    
+    def on_scroll(self, event):
+        base_scale = 1.1
+        ax = self.ax
+
+        x_min, x_max = ax.get_xlim()
+        y_min, y_max = ax.get_ylim()
+
+        x_range = (x_max - x_min)
+        y_range = (y_max - y_min)
+
+        xdata = event.xdata
+        ydata = event.ydata
+
+        if xdata is None or ydata is None:
+            return
+
+        if event.button == 'up':
+            scale_factor = 1 / base_scale
+        elif event.button == 'down':
+            scale_factor = base_scale
+        else:
+            scale_factor = 1
+
+        new_width = x_range * scale_factor
+        new_height = y_range * scale_factor
+
+        relx = (xdata - x_min) / x_range
+        rely = (ydata - y_min) / y_range
+
+        ax.set_xlim([xdata - new_width * relx, xdata + new_width * (1 - relx)])
+        ax.set_ylim([ydata - new_height * rely, ydata + new_height * (1 - rely)])
+        self.draw_idle()
+
+    def on_press(self, event):
+        if event.button == 1 and event.inaxes == self.ax:  # Left click
+            self._drag_start = (event.xdata, event.ydata)
+            self._xlim_start = self.ax.get_xlim()
+            self._ylim_start = self.ax.get_ylim()
+
+    def on_drag(self, event):
+        if self._drag_start and event.inaxes == self.ax:
+            dx = event.xdata - self._drag_start[0]
+            dy = event.ydata - self._drag_start[1]
+
+            new_xlim = (self._xlim_start[0] - dx, self._xlim_start[1] - dx)
+            new_ylim = (self._ylim_start[0] - dy, self._ylim_start[1] - dy)
+
+            self.ax.set_xlim(new_xlim)
+            self.ax.set_ylim(new_ylim)
+            self.ax.figure.canvas.draw_idle()
+
+    def on_release(self, event):
+        self._drag_start = None
 
     def shade_area_under_curve(self, x_vals, y_vals, color='#8E87F4', alpha=0.2):
         """Add shaded area under the curve for better visualization of the integral."""
@@ -186,8 +247,7 @@ class PlotWidget(FigureCanvas):
         self.ax.set_ylim(y_min - 0.1 * y_range, y_max + 0.1 * y_range)
 
         # Add shaded area under the integral curve (if integral data exists)
-        if int_vals is not None:
-            self.shade_area_under_curve(x_vals, int_vals, color='#6C5CE7', alpha=0.1)
+        self.shade_area_under_curve(x_vals, y_vals_list[0], color='#6C5CE7', alpha=0.1)
         
         # Add legend
         self.ax.legend(

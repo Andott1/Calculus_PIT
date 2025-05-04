@@ -3,13 +3,13 @@ import os
 import glob
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QPushButton, QLabel, QLineEdit, 
-                             QTabWidget, QFrame, QSizePolicy, QStackedWidget, QTextEdit, QStackedLayout, QDesktopWidget, QSpacerItem, QMessageBox, QFileDialog)
+                             QFrame, QSizePolicy, QStackedWidget, QTextEdit, QDesktopWidget, QSpacerItem, QMessageBox, QFileDialog)
 from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QRect, QEasingCurve
-from PyQt5.QtGui import QPalette, QColor, QFont, QFontDatabase, QLinearGradient, QBrush, QPainter, QPainterPath, QIcon, QPixmap, QCursor
+from PyQt5.QtGui import QPalette, QColor, QFont, QFontDatabase, QBrush, QPainter, QPainterPath, QIcon, QPixmap, QCursor
 from datetime import datetime
 import numpy as np
 import sympy as sp
-from scipy.integrate import quad, cumulative_trapezoid
+import scipy.integrate as integrate
 from graph import PlotWidget 
 
 # -----------------------------------------------
@@ -825,8 +825,7 @@ class GraphiqueApp(QMainWindow):
             self.warning(warning="Invalid function syntax.\nExample: 3*x**2 + 2*x - 4")
             return None, None
     
-
-    # Translates derivative function logic
+    # Finite difference approximation not scipy.misc.derivatives
     def numerical_derivative(self, func, x_val, dx=1e-5):
         return (func.subs('x', x_val + dx).evalf() - func.subs('x', x_val - dx).evalf()) / (2 * dx)
     
@@ -881,8 +880,17 @@ class GraphiqueApp(QMainWindow):
         # Calculate the definite integral from x_min to x_max
         func_definite_integral = sp.integrate(func, (x, x_min, x_max))
         
-        # Calculate the integral values
-        indef_int_vals = cumulative_trapezoid(y_vals_list[0], x_vals, initial=0)
+        # Replace the trapezoidal rule with scipy.integrate.quad for calculating integral values
+        def integrand(val):
+            return float(func.subs(x, val).evalf())  # Define the function to integrate
+
+        indef_int_vals = []
+        for i in range(1, len(x_vals)):
+            result, _ = integrate.quad(integrand, x_vals[i-1], x_vals[i])  # Integrate between consecutive x_vals
+            indef_int_vals.append(result)
+
+        # Optionally add the initial value
+        indef_int_vals = [0] + indef_int_vals
 
         # Update the result box with the original function, derivatives, and integral
         derivative_text = ""
