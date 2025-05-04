@@ -68,7 +68,7 @@ class CircleButtonInfo(QPushButton):
         icon_path = "Assets/group_icon.png"  # Ensure this points to the correct image path
         self.setIcon(QIcon(icon_path))
         
-        icon_size = self.size() * 0.4  # 70% of button size
+        icon_size = self.size() * 0.4  # 40% of button size
         self.setIconSize(icon_size)
 
         self.setStyleSheet("""
@@ -109,7 +109,7 @@ class GraphiqueApp(QMainWindow):
         main_layout = QVBoxLayout(main_widget)
         main_layout.setContentsMargins(50, 50, 50, 50)
 
-        # Create the outer container with rounded corners
+        # Outer container with rounded corners
         outer_container = RoundedWidget(radius=30, bg_color=QColor(255, 255, 255, 250))
         outer_layout = QVBoxLayout(outer_container)
         outer_layout.setContentsMargins(30, 30, 30, 30)
@@ -124,7 +124,7 @@ class GraphiqueApp(QMainWindow):
         content_layout = self.create_content_section()
         outer_layout.addLayout(content_layout, 1)
 
-        # Set gradient background for the main window
+        # Set image background for the main window
         self.setAutoFillBackground(True)
         self.set_image_background("Assets/main_screen.png")
 
@@ -134,11 +134,11 @@ class GraphiqueApp(QMainWindow):
         screen_width = screen.width()
         screen_height = screen.height()
 
-        # Define the desired window size as a percentage of the screen size
+        # Define window size as a percentage of the screen size
         window_width_percentage = 0.75  # 75% of the screen width
         window_height_percentage = 0.8  # 80% of the screen height
 
-        # Calculate the window's size based on the percentages
+        # Calculate window's size based on the percentages
         window_width = int(screen_width * window_width_percentage)
         window_height = int(screen_height * window_height_percentage)
 
@@ -224,11 +224,11 @@ class GraphiqueApp(QMainWindow):
         content_layout = QHBoxLayout()
         content_layout.setSpacing(25)
         
-        # Left Panel (controls and carousel)
+        # Left Panel (controls)
         left_panel = self.create_left_panel()
         content_layout.addWidget(left_panel, 1)
 
-        # Right Panel (graph and details)
+        # Right Panel (graph and details tabs)
         right_panel = self.create_right_panel()
         content_layout.addWidget(right_panel, 2)
         
@@ -293,10 +293,9 @@ class GraphiqueApp(QMainWindow):
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         separator.setFrameShadow(QFrame.Sunken)
-        separator.setFixedHeight(4)  # Set thickness
-        separator.setFixedWidth(300)  # Set width of the separator
+        separator.setFixedHeight(4)  # Fixed Height
+        separator.setFixedWidth(300)  # Fixed Width
 
-        # Customize color and margin
         separator.setStyleSheet("""
             QFrame {
                 border-radius: 2px;
@@ -320,10 +319,9 @@ class GraphiqueApp(QMainWindow):
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         separator.setFrameShadow(QFrame.Sunken)
-        separator.setFixedHeight(4)  # Set thickness
-        separator.setFixedWidth(300)  # Set width of the separator
+        separator.setFixedHeight(4)  # Fixed Height
+        separator.setFixedWidth(300)  # Fixed Width
 
-        # Customize color and margin
         separator.setStyleSheet("""
             QFrame {
                 border-radius: 2px;
@@ -338,13 +336,13 @@ class GraphiqueApp(QMainWindow):
 
         control_layout.addSpacing(10)
 
-        # Switch to Details Button
+        # Switch Button
         toggle_button = self.create_toggle_button()
         control_layout.addWidget(toggle_button)
 
         return control_panel
 
-    def create_input_field(self, placeholder, label):
+    def create_input_field(self, placeholder, label): # Function input fields styling
         input_field = QLineEdit()
         input_field.setPlaceholderText(placeholder)
         input_field.setStyleSheet("""
@@ -367,7 +365,7 @@ class GraphiqueApp(QMainWindow):
         input_field.setMinimumHeight(40)
         return input_field
 
-    def create_range_inputs(self):
+    def create_range_inputs(self): # X-range input fields styling
         range_layout = QHBoxLayout()
         range_layout.setSpacing(15)
 
@@ -397,7 +395,7 @@ class GraphiqueApp(QMainWindow):
 
         return buttons_layout
 
-    def create_button(self, text):
+    def create_button(self, text): # Plot, Save Graph buttons styling
         button = QPushButton(text)
 
         button.setStyleSheet("""
@@ -425,9 +423,6 @@ class GraphiqueApp(QMainWindow):
         right_layout = QVBoxLayout(right_panel)
         right_layout.setContentsMargins(15, 15, 15, 15)
 
-        font = QFont("Roboto")
-        print(font.weight())  # This will show the weight of the current font
-
         stacked_widget = self.create_stacked_widget()
         right_layout.addWidget(stacked_widget)
 
@@ -436,12 +431,17 @@ class GraphiqueApp(QMainWindow):
     def create_stacked_widget(self):
         stacked_widget = QStackedWidget()
 
+        # Create the layout for the graph_tab
         graph_tab = QWidget()
         graph_tab.setStyleSheet("background-color: #FFFFFF;")
         graph_layout = QVBoxLayout(graph_tab)
         self.plot_widget = PlotWidget()
         self.plot_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        # Add the graph box to the graph tab layout
         graph_layout.addWidget(self.plot_widget)
+        
+        # Add the graph tab to the stacked widget
         stacked_widget.addWidget(graph_tab)
 
         details_tab = QWidget()
@@ -471,7 +471,7 @@ class GraphiqueApp(QMainWindow):
 
         return stacked_widget
 
-    def create_toggle_button(self):
+    def create_toggle_button(self): # Switch to graph or details button styling
         toggle_button = QPushButton("Switch to Details")
         toggle_button.setStyleSheet("""
             QPushButton {
@@ -494,7 +494,7 @@ class GraphiqueApp(QMainWindow):
         toggle_button.clicked.connect(self.toggle_view)
         return toggle_button
 
-    def toggle_view(self):
+    def toggle_view(self):      # Switch to graph or details button logic
         stacked_widget = self.findChild(QStackedWidget)
         current_index = stacked_widget.currentIndex()
         new_index = 1 - current_index
@@ -506,16 +506,16 @@ class GraphiqueApp(QMainWindow):
         else:
             toggle_button.setText("Switch to Graph")
 
-    def update_datetime(self):
+    def update_datetime(self):  # Date time update realtime
         current_time = datetime.now().strftime("%A, %B %d, %Y - %I:%M:%S %p")
         self.datetime_label.setText(current_time)
     
-    def back_to_splash(self):
+    def back_to_splash(self):   # Back button logic
         self.close()
         self.splash = SplashScreen()
         self.splash.show()
 
-    def show_info_dialog(self):
+    def show_info_dialog(self): # Info button logic
         QMessageBox.information(
             self,
             "Group Members",
@@ -524,17 +524,21 @@ class GraphiqueApp(QMainWindow):
             <span style="font-size: 16px; font-weight: normal; color: #333;">1. Kurt Andre Olaer</span><br>
             <span style="font-size: 16px; font-weight: normal; color: #333;">2. James Dominic Tion</span><br>
             <span style="font-size: 16px; font-weight: normal; color: #333;">3. Mariel Laplap</span><br>
-            <span style="font-size: 16px; font-weight: normal; color: #333;">4. Gwyneth Galleros</span><br>
+            <span style="font-size: 16px; font-weight: normal; color: #333;">4. Gwynette Galleros</span><br>
             <span style="font-size: 16px; font-weight: normal; color: #333;">5. Yasser Tomawis</span>
             """,
             QMessageBox.Ok
         )
     
-    def set_image_background(self, image_path):
+
+    # Main app background logic 1
+    def set_image_background(self, image_path): 
         self.image_path = image_path
         self.update_background()
 
-    def update_background(self):
+
+    # Main app background logic 2
+    def update_background(self):    
         palette = self.palette()
         pixmap = QPixmap(self.image_path)
         
@@ -545,11 +549,14 @@ class GraphiqueApp(QMainWindow):
         palette.setBrush(QPalette.Background, QBrush(pixmap))
         self.setPalette(palette)
 
+
+    # Update the image background whenever the window is resized
     def resizeEvent(self, event):
-        # Update the background whenever the window is resized
         self.update_background()
         super().resizeEvent(event)
 
+
+    # Reading the function input logic
     def parse_function(self, func_str):
         x = sp.Symbol('x')
         try:
@@ -559,9 +566,13 @@ class GraphiqueApp(QMainWindow):
             self.warning(warning="Invalid function syntax.\nExample: 3*x**2 + 2*x - 4")
             return None, None
     
+
+    # Translates derivative function logic
     def numerical_derivative(self, func, x_val, dx=1e-5):
         return (func.subs('x', x_val + dx).evalf() - func.subs('x', x_val - dx).evalf()) / (2 * dx)
     
+
+    # Plotting of graph logic
     def plot(self):
         func_str = self.function_input.text()
         try:
@@ -615,7 +626,6 @@ class GraphiqueApp(QMainWindow):
         # Update the result box with the original function, derivatives, and integral
         derivative_text = ""
         for i in range(1, derivative_order + 1):
-            # Add a line for each derivative, but avoid adding extra <br> at the end
             if i < derivative_order:
                 derivative_text += f"<b>Derivative [{i}]</b>:<br>  f^{i}(x) = {sp.simplify(derivatives[i])}<br><br>"
             else:
@@ -635,7 +645,7 @@ class GraphiqueApp(QMainWindow):
         # Set the result box styles
         self.result_box.setStyleSheet("QTextEdit { padding: 0px; margin: 0px; }")  # Remove padding and margin from QTextEdit
 
-        # Set the HTML content for the result box
+        # Set the contents for result box with HTML styling
         self.result_box.setHtml(
             f"""
             <div style="line-height: 1.6; color: #333; font-family: 'Roboto'; margin: 0; padding: 0;">
@@ -657,6 +667,8 @@ class GraphiqueApp(QMainWindow):
         # Plot the original function and all derivatives
         self.plot_widget.animate_plot(x_vals, y_vals_list, dy_vals_list, int_vals)
 
+
+    # Save current graph as image
     def save_plot(self):
         """Opens a file dialog to save the plot as an image."""
         options = QFileDialog.Options()
@@ -666,6 +678,8 @@ class GraphiqueApp(QMainWindow):
             self.plot_widget.save_plot(file_name)
             print(f"Plot saved as: {file_name}")
 
+
+    # Warning popup box
     def warning(self, warning):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Icon.Warning)
@@ -674,6 +688,8 @@ class GraphiqueApp(QMainWindow):
         msg.setStandardButtons(QMessageBox.StandardButton.Ok)
         retval = msg.exec()
 
+
+# Splash screen logic
 class SplashScreen(QWidget):
     def __init__(self):
         super().__init__()
@@ -681,6 +697,7 @@ class SplashScreen(QWidget):
         self.setWindowTitle("Welcome to Graphique")
         self.setWindowFlag(Qt.FramelessWindowHint)
 
+        # Center and scale window to percent of screen
         screen_geometry = QDesktopWidget().screenGeometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
@@ -739,6 +756,8 @@ class SplashScreen(QWidget):
 
         QTimer.singleShot(1000, self.animate_button)
 
+
+    # Loads custom font in Assets/Fonts folder
     def load_custom_font(self):
         import os
         font_dir = "Assets/Fonts"
@@ -757,6 +776,8 @@ class SplashScreen(QWidget):
         if loaded_families:
             QApplication.setFont(QFont(loaded_families[0]))
 
+
+    # Simple button animation
     def animate_button(self):
         self.start_button.setVisible(True)
         self.start_button.update()
@@ -773,6 +794,8 @@ class SplashScreen(QWidget):
         self.anim.setEasingCurve(QEasingCurve.OutBack)
         self.anim.start()
 
+
+    # Splash screen show logic
     def launch_main(self):
         self.close()
         self.main = GraphiqueApp()
