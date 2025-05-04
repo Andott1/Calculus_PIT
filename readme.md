@@ -72,6 +72,10 @@ To run the application, simply execute the main.py file:
 python main.py
 ```
 
+or
+
+run main.exe
+
 The application will start with a splash screen, followed by the main application window.
 
 ## Project Structure
@@ -81,18 +85,23 @@ Graphique/
 ├── Assets/
 │   └── App Screenshots/
 │   │   ├── Main Screen.png         # Main screen screenshot
+│   │   ├── Main Screen Graph.png   # Main screen with graph screenshot
+│   │   ├── Main Screen Details.png # Main screen with detials screenshot
 │   │   └── Splash Screen.png       # Splash screen screenshot
 │   ├── Fonts/                      
 │   │   ├── Roboto_Condensed-Black.ttf
-│   │   └── Roboto-Black.ttf      
-│   │   ├── Roboto-Italic.ttf       # Complete font family
-│   │   └── ... +33 more .ttf
-│   ├── Resources/
-│   ├── back_icon.png               # Back icon image
-│   └── info_icon.png               # Info icon image
-│   ├── splash_screen.png           # Splash screen image
-│   └── main_screen.png             # Main screen image
+│   │   ├── Roboto_Condensed-Bold.ttf    
+│   │   ├── Roboto_Condensed-ExtraBold.ttf  # Complete font family
+│   │   └── ... +13 more .ttf
+│   ├── Icons/                      
+│   │   ├── back_icon.png           # Back icon image
+│   │   └── info_icon.png           # Info icon image
+│   ├── Resources/                  
+│   └── Screens/
+│       ├── splash_screen.png       # Splash screen image
+│       └── main_screen.png         # Main screen image
 ├── graph.py                        # Plotting widget using Matplotlib
+├── Graphique.exe                   # Main application executable file
 ├── main.py                         # Main application logic and UI
 ├── requirements.txt                # (Optional) List of required packages
 └── README.md                       # This file
@@ -101,11 +110,11 @@ Graphique/
 ## Usage
 
 1. **Enter a Function**: Input a valid expression like 3*x**2 + 2*x - 4
-2. **Set X Range**: Specify minimum and maximum values (e.g., -10 to 10)
-3. **Choose Derivative Order**: Optional, set to 1 for first derivative, 2 for second, etc.
-4. **Click Plot**: Visualize the function, its derivatives, and integral
-5. **Save Graph**: Export the plotted graph to an image file
-6. **Switch View**: Function Graph or Symbolic derivative and integral will be shown on toggle
+1. **Set X Range**: Specify minimum and maximum values (e.g., -10 to 10)
+1. **Choose Derivative Order**: Optional, set to 1 for first derivative, 2 for second, etc.
+1. **Click Plot**: Visualize the function, its derivatives, and integral
+1. **Save Graph**: Export the plotted graph to an image file
+1. **Switch View**: Function Graph or Symbolic derivative and integral will be shown on toggle
 
 ## Troubleshooting
 
@@ -132,7 +141,21 @@ Graphique/
 ### To modify the UI or logic
 
 1. Edit main.py for main functionality and UI logic
-2. Modify graph.py to customize how plots appear
+1. Modify graph.py to customize how plots appear
+
+### To build the application
+
+1. Make sure PyInstaller is installed. You can install it with:
+
+```bash
+pip install pyinstaller
+```
+
+1. To build the application, simply execute the command file:
+
+```bash
+pyinstaller --clean main.spec
+```
 
 ## License
 
