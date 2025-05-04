@@ -73,7 +73,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='Graphique v1.0.0 Hotfix v1 – Portable',
+    name='Graphique v1.0.2 – Portable',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -81,6 +81,7 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,  # Set to False for a windowed application
+    icon='Assets/Icons/app_icon.ico',
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,

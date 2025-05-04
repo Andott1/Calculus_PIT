@@ -355,6 +355,9 @@ class GraphiqueApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
+        icon_path = asset_manager.load_asset("Assets/Icons/app_icon.ico")
+        if icon_path:
+            self.setWindowIcon(QIcon(icon_path))
     
     def initUI(self):
         self.setWindowTitle('Graphique')
@@ -969,6 +972,9 @@ class SplashScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.load_custom_font()
+        icon_path = asset_manager.load_asset("Assets/Icons/app_icon.ico")
+        if icon_path:
+            self.setWindowIcon(QIcon(icon_path))
         self.setWindowTitle("Welcome to Graphique")
         self.setWindowFlag(Qt.FramelessWindowHint)
 
