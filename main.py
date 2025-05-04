@@ -41,14 +41,14 @@ class AssetManager:
     
     def get_base_dir(self):
         """
-        Get the base directory for assets, handling both development and PyInstaller environments.
+            the base directory for assets, handling both development and PyInstaller environments.
         """
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
             # Running in PyInstaller bundle
             return sys._MEIPASS
         else:
-            # Running in normal Python environment
-            return os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        # When running normally (like python main.py)
+            return os.path.dirname(os.path.abspath(__file__))
     
     def scan_assets(self):
         """
