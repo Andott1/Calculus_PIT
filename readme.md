@@ -2,7 +2,7 @@
 
 **Graphique** is a PyQt5-powered graphical application that allows users to input and visualize mathematical functions, their derivatives (up to any order), and their integrals over a specified domain. It is useful for students, educators, and professionals who want to better understand calculus concepts through visual representation.
 
-![Function Visualizer (Graphique)](Assets/splash_screen.png)
+![Function Visualizer (Graphique)](Assets/Screens/splash_screen.png)
 
 ---
 

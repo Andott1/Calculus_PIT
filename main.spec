@@ -22,7 +22,6 @@ def collect_all_assets():
         'Fonts',
         'Icons',
         'Screens',
-        'Resources'  # Added Resources folder
     ]
     
     # Process each folder
@@ -81,7 +80,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,  # Set to False for a windowed application
+    console=False,  # Set to False for a windowed application
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
