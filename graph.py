@@ -144,7 +144,7 @@ class PlotWidget(FigureCanvas):
         
         # Set up the plot with styling
         plt.style.use('seaborn-v0_8-whitegrid')
-        self.figure.patch.set_facecolor('#f8f9fa')
+        self.figure.patch.set_facecolor('white')
         self.ax.set_facecolor('white')
         
         # Set up empty lines
@@ -184,13 +184,17 @@ class PlotWidget(FigureCanvas):
         
         self.ax.set_xlim(np.min(x_vals), np.max(x_vals))
         self.ax.set_ylim(y_min - 0.1 * y_range, y_max + 0.1 * y_range)
+
+        # Add shaded area under the integral curve (if integral data exists)
+        if int_vals is not None:
+            self.shade_area_under_curve(x_vals, int_vals, color='#6C5CE7', alpha=0.1)
         
         # Add legend
         self.ax.legend(
-            loc='upper right',
+            loc='upper left',
             fontsize=10,
             frameon=True,
-            framealpha=0.95,
+            framealpha=0.5,
             facecolor='white',
             edgecolor='#ddd',
             borderpad=1,

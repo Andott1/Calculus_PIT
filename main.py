@@ -610,13 +610,13 @@ class GraphiqueApp(QMainWindow):
                 padding: 10px;
                 background-color: rgba(145, 145, 220, 0.25);
                 font-family: 'Roboto Medium';
-                font-size: 12px;
+                font-size: 16px;
                 color: #7777B2; /* <-- Font color */
             }
                                   
             QLineEdit:focus {
                 font-family: 'Roboto Light';
-                font-size: 12px;
+                font-size: 16px;
                 border: 2px solid #7777B2; /* Blue border on focus */
                 background-color: rgba(145, 145, 220, 0.15); /* Optional light background */
             }
@@ -780,11 +780,11 @@ class GraphiqueApp(QMainWindow):
             "Group Members",
             """
             <span style="font-size: 18px; font-weight: bold; color: #333;">GROUP MEMBERS:</span><br><br>
-            <span style="font-size: 16px; font-weight: normal; color: #333;">1. Kurt Andre Olaer</span><br>
-            <span style="font-size: 16px; font-weight: normal; color: #333;">2. James Dominic Tion</span><br>
-            <span style="font-size: 16px; font-weight: normal; color: #333;">3. Mariel Laplap</span><br>
-            <span style="font-size: 16px; font-weight: normal; color: #333;">4. Gwynette Galleros</span><br>
-            <span style="font-size: 16px; font-weight: normal; color: #333;">5. Yasser Tomawis</span>
+            <span style="font-size: 16px; font-weight: regular; color: #333;">1. Kurt Andre Olaer</span><br>
+            <span style="font-size: 16px; font-weight: regular; color: #333;">2. James Dominic Tion</span><br>
+            <span style="font-size: 16px; font-weight: regular; color: #333;">3. Mariel Laplap</span><br>
+            <span style="font-size: 16px; font-weight: regular; color: #333;">4. Gwynette Galleros</span><br>
+            <span style="font-size: 16px; font-weight: regular; color: #333;">5. Yasser Tomawis</span>
             """,
             QMessageBox.Ok
         )
@@ -876,11 +876,13 @@ class GraphiqueApp(QMainWindow):
             # Also add the values for the current derivative
             y_vals_list.append(np.array([float(derivatives[i].subs(x, val).evalf()) for val in x_vals], dtype=np.float64))
 
-        # Calculate the symbolic integral of the original function
-        func_integral = sp.integrate(func, x)
+        # Calculate the indefinite integral of the original function
+        func_indefinite_integral = sp.integrate(func, x)
+        # Calculate the definite integral from x_min to x_max
+        func_definite_integral = sp.integrate(func, (x, x_min, x_max))
         
         # Calculate the integral values
-        int_vals = cumulative_trapezoid(y_vals_list[0], x_vals, initial=0)
+        indef_int_vals = cumulative_trapezoid(y_vals_list[0], x_vals, initial=0)
 
         # Update the result box with the original function, derivatives, and integral
         derivative_text = ""
@@ -892,11 +894,13 @@ class GraphiqueApp(QMainWindow):
 
         # Simplify the function and derivative text
         simplified_func = sp.simplify(func)
-        simplified_integral = sp.simplify(func_integral)
+        simplified_indefinite_integral = sp.expand(func_indefinite_integral)
+        simplified_definite_integral = sp.simplify(func_definite_integral)
 
         # Convert the expression to string and replace symbols
         formatted_func = str(simplified_func).replace('**', '^').replace('*', '')
-        formatted_integral = str(simplified_integral).replace('**', '^').replace('*', '')
+        formatted_indefinite_integral = str(simplified_indefinite_integral).replace('**', '^').replace('*', '')
+        formatted_definite_integral = str(simplified_definite_integral).replace('**', '^').replace('*', '')
 
         # Construct the derivative text similarly, if applicable
         derivative_text = derivative_text.replace('**', '^').replace('*', '')
@@ -916,15 +920,19 @@ class GraphiqueApp(QMainWindow):
                 <div style="color: #55557D; font-size: 26px; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">Derivatives:</div>
                 <div style="color: #55557D; margin-left: 15px; font-size: 22px; margin-top: 0;">{derivative_text}</div>
 
-                <!-- Integral -->
+                <!-- Indefinite Integral -->
                 <div style="color: #55557D; font-size: 26px; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">Integral:</div>
-                <div style="color: #55557D; margin-left: 15px; font-size: 22px; margin-top: 0;">∫f(x)dx = {formatted_integral} + C</div>
+                <div style="color: #55557D; margin-left: 15px; font-size: 22px; margin-top: 0;">∫f(x)dx = {formatted_indefinite_integral} + C</div>
+
+                <!-- Definite Integral -->
+                <div style="color: #55557D; font-size: 26px; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">Definite Integral:</div>
+                <div style="color: #55557D; margin-left: 15px; font-size: 22px; margin-top: 0;">∫<sub>{x_min}</sub><sup>{x_max}</sup> f(x) dx = {formatted_definite_integral}</div>
             </div>
             """
         )
 
         # Plot the original function and all derivatives
-        self.plot_widget.animate_plot(x_vals, y_vals_list, dy_vals_list, int_vals)
+        self.plot_widget.animate_plot(x_vals, y_vals_list, dy_vals_list, indef_int_vals)
 
 
     # Save current graph as image
@@ -1046,9 +1054,9 @@ class SplashScreen(QWidget):
                 print(f"Failed to load font: {font_path}")
 
         if loaded_families:
-            font = QFont(loaded_families[0])
+            font = QFont(loaded_families[6])
             QApplication.setFont(font)
-            print(f"Application font set to: {loaded_families[0]}")
+            print(f"Application font set to: {loaded_families[6]}")
         else:
             print("No fonts were loaded.")
 
