@@ -73,7 +73,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='Graphique',
+    name='Graphique v1.0.0 Hotfix v1 – Portable',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
