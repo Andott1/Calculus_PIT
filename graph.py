@@ -29,7 +29,7 @@ class PlotWidget(FigureCanvas):
         plt.style.use('seaborn-v0_8-whitegrid')
         
         # Set figure background color
-        self.figure.patch.set_facecolor('#f8f9fa')
+        self.figure.patch.set_facecolor('white')
         self.ax.set_facecolor('white')
         
         # Plot the original function with better styling
